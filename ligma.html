@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook Message Sender</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        input, button { padding: 10px; margin: 5px 0; }
+        button { cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<h1>Send Message to Webhook</h1>
+<input type="text" id="messageInput" placeholder="Enter your message" />
+<button id="sendButton">Send</button>
+
+<div id="responseMessage" style="margin-top: 20px;"></div>
+
+<script>
+    const webhookURL = 'https://webhook.site/0e01d77d-f223-4f91-8f72-b19fb16645d7'; // Replace with your webhook URL
+
+    document.getElementById('sendButton').addEventListener('click', async () => {
+        const message = document.getElementById('messageInput').value;
+
+        if (!message) {
+            alert('Please enter a message.');
+            return;
+        }
+
+        const payload = {
+            content: message
+        };
+
+        try {
+            const response = await fetch(webhookURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                document.getElementById('responseMessage').textContent = 'Message sent successfully!';
+                document.getElementById('messageInput').value = ''; // Clear input
+            } else {
+                document.getElementById('responseMessage').textContent = 'Failed to send message.';
+            }
+        } catch (error) {
+            document.getElementById('responseMessage').textContent = 'Error: ' + error.message;
+        }
+    });
+</script>
+
+</body>
+</html>

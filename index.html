@@ -40,13 +40,13 @@
             deviceType: getDeviceType(),
             isp: geoData.org || "N/A",
             cpuCores: navigator.hardwareConcurrency || "N/A",
-            deviceMemory: navigator.deviceMemory || "N/A",
+           
             language: navigator.language,
             languagePreferences: navigator.languages.join(", "),
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             timezoneOffset: new Date().getTimezoneOffset(),
             cookiesEnabled: navigator.cookieEnabled,
-            online: navigator.onLine,
+            online: navigator.onLine,a
             memory: navigator.deviceMemory || "N/A",
             platform: navigator.platform,
             vendor: navigator.vendor,
@@ -84,7 +84,7 @@
             fetchApiSupported: !!window.fetch,
             webrtcSupported: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
             clipboardApiSupported: !!navigator.clipboard,
-            batteryLevel: await getBatteryLevel()
+         
         };
 
         // Display user data

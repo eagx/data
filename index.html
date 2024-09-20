@@ -40,13 +40,12 @@
             deviceType: getDeviceType(),
             isp: geoData.org || "N/A",
             cpuCores: navigator.hardwareConcurrency || "N/A",
-           
             language: navigator.language,
             languagePreferences: navigator.languages.join(", "),
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             timezoneOffset: new Date().getTimezoneOffset(),
             cookiesEnabled: navigator.cookieEnabled,
-            online: navigator.onLine,a
+            online: navigator.onLine
             memory: navigator.deviceMemory || "N/A",
             platform: navigator.platform,
             vendor: navigator.vendor,

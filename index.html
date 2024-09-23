@@ -45,8 +45,8 @@
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             timezoneOffset: new Date().getTimezoneOffset(),
             cookiesEnabled: navigator.cookieEnabled,
-            online: navigator.onLine
-            memory: navigator.deviceMemory || "N/A",
+            online: navigator.onLine,
+            memory: navigator.deviceMemory || "N/A", // Added missing comma here
             platform: navigator.platform,
             vendor: navigator.vendor,
             product: navigator.product,
@@ -83,7 +83,6 @@
             fetchApiSupported: !!window.fetch,
             webrtcSupported: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
             clipboardApiSupported: !!navigator.clipboard,
-         
         };
 
         // Display user data

